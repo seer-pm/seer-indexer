@@ -66,7 +66,6 @@ contracts:
     handler: ./src/EventHandlers.ts
     events:
       - event: MetaEvidence(uint256 indexed _metaEvidenceID, string _evidence)
-
   - name: OutcomeToken
     abi_file_path: ./abis/erc20.json
     handler: ./src/transfers.ts
@@ -75,7 +74,6 @@ contracts:
         field_selection:
           transaction_fields:
             - hash
-
   - name: MainCollateral
     abi_file_path: ./abis/erc20.json
     handler: ./src/transfers.ts
@@ -84,7 +82,6 @@ contracts:
         field_selection:
           transaction_fields:
             - hash
-
   - name: SerLpp
     abi_file_path: ./abis/erc20.json
     handler: ./src/transfers.ts
@@ -103,6 +100,14 @@ networks:
           - 0x83183da839ce8228e31ae41222ead9edbb5cdcf1
           - 0x1246c7e5ac59ba73a45a62e3081b548f02f58e90
         start_block: 36404701
+      - name: OutcomeToken
+        address: null
+      - name: MainCollateral
+        address: 0xaf204776c7245bf4147c2612bf6e5972ee483701
+        start_block: 36404701
+      - name: SerLpp
+        address: 0xa7a7f8d1770c08e2e1f55d8c6427c1f8213a34da
+        start_block: 36435057
       - name: FutarchyFactory
         address: 0xa6cb18fcdc17a2b44e5cad2d80a6d5942d30a345
         start_block: 38290244
@@ -114,17 +119,16 @@ networks:
         start_block: 36404701
       - name: CurateIEvidence
         address: 0x5aaf9e23a11440f8c1ad6d2e2e5109c7e52cc672
-      - name: MainCollateral
-        address: 0xaf204776c7245bf4147c2612bf6e5972ee483701
-        start_block: 36404701
-      - name: SerLpp
-        address: 0xa7a7f8d1770c08e2e1f55d8c6427c1f8213a34da
-        start_block: 36435057
   - id: 1
     start_block: 20892368
     contracts:
       - name: MarketFactory
         address: 0x1f728c2fd6a3008935c1446a965a313e657b7904
+        start_block: 20894990
+      - name: OutcomeToken
+        address: null
+      - name: MainCollateral
+        address: 0x83f20f44975d03b1b09e64809b757c47f942beea
         start_block: 20894990
       - name: Reality
         address: 0x5b7dd1e86623548af054a4985f7fc8ccbb554e2c
@@ -140,42 +144,43 @@ networks:
           - 0x2018038203aee8e7a29dabd73771b0355d4f85ad
           - 0xfe0eb5fc686f929eb26d541d75bb59f816c0aa68
           - 0xd8b33e3f5426db753d1c6c78b43d5151970cd928
-      - name: MainCollateral
-        address: 0x83f20f44975d03b1b09e64809b757c47f942beea
-        start_block: 20894990
   - id: 10
     start_block: 140163863
     contracts:
       - name: MarketFactory
         address: 0x886ef0a78fabbae942f1da1791a8ed02a5af8bc6
+      - name: OutcomeToken
+        address: null
+      - name: MainCollateral
+        address: 0xb5b2dc7fd34c249f4be7fb1fcea07950784229e0
       - name: Reality
         address: 0x0ef940f7f053a2ef5d6578841072488af0c7d89a
       - name: ConditionalTokens
         address: 0x8bdc504dc3a05310059c1c67e0a2667309d27b93
-      - name: MainCollateral
-        address: 0xb5b2dc7fd34c249f4be7fb1fcea07950784229e0
-        start_block: 140163863
   - id: 8453
     start_block: 34781185
     contracts:
       - name: MarketFactory
         address: 0x886ef0a78fabbae942f1da1791a8ed02a5af8bc6
+      - name: OutcomeToken
+        address: null
+      - name: MainCollateral
+        address: 0x5875eee11cf8398102fdad704c9e96607675467a
       - name: Reality
         address: 0x2f39f464d16402ca3d8527da89617b73de2f60e8
       - name: ConditionalTokens
         address: 0xab797c4c6022a401c31543e316d3cd04c67a87fc
-      - name: MainCollateral
-        address: 0x5875eee11cf8398102fdad704c9e96607675467a
-        start_block: 34781185
-  - id: 11155111
-    start_block: 6992825
-    contracts:
-      - name: MarketFactory
-        address: 0x221456acfd185ee168052b3da899939303775c7a
-      - name: Reality
-        address: 0xaf33dcb6e8c5c4d9ddf579f53031b514d19449ca
-      - name: ConditionalTokens
-        address: 0x8bdc504dc3a05310059c1c67e0a2667309d27b93
-      - name: CurateIEvidence
-        address: 0x06140fb869486363818196b61704493a8790f73c
-        start_block: 7894106
+  #- id: 11155111
+  #  start_block: 6992825
+  #  contracts:
+  #    - name: MarketFactory
+  #      address: 0x221456acfd185ee168052b3da899939303775c7a
+  #    - name: OutcomeToken
+  #      address: null
+  #    - name: Reality
+  #      address: 0xaf33dcb6e8c5c4d9ddf579f53031b514d19449ca
+  #    - name: ConditionalTokens
+  #      address: 0x8bdc504dc3a05310059c1c67e0a2667309d27b93
+  #    - name: CurateIEvidence
+  #      address: 0x06140fb869486363818196b61704493a8790f73c
+  #     start_block: 7894106

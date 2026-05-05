@@ -17,11 +17,17 @@ import {
   splitMethods,
 } from "./conditionalLogic";
 import {
-  fetchFutarchyMarketData,
-  fetchGenericMarketData,
-  processMarket,
-  readCollateralToken,
-} from "./marketsLogic";
+  fetchFutarchyMarketDataEffect,
+  fetchGenericMarketDataEffect,
+  readCollateralTokenEffect,
+} from "./marketEffects";
+import {
+  fetchFutarchyMarketDataRaw,
+  fetchGenericMarketDataRaw,
+} from "./marketRpcReads";
+import type { MarketProcessInput } from "./marketsLogic";
+import { processMarket } from "./marketsLogic";
+import { parseMarketProcessInput } from "./marketSerde";
 import { entityId } from "./entityIds";
 import { getFinalizeTs, processReopenedQuestion } from "./realityLogic";
 
@@ -49,9 +55,19 @@ MarketFactory.NewMarket.handler(async ({ event, context }) => {
   const blockNumber = event.block.number;
   const factory = event.srcAddress as Address;
   const marketAddr = event.params.market as Address;
-  const data = await fetchGenericMarketData(chainId, blockNumber, factory, marketAddr);
+  const dataJson = (await context.effect(fetchGenericMarketDataEffect, {
+    chainId,
+    blockNumber,
+    factoryAddress: factory,
+    marketAddress: marketAddr,
+  })) as string;
+  const data = parseMarketProcessInput(dataJson);
 
-  const collateral = await readCollateralToken(chainId, blockNumber, factory);
+  const collateral = (await context.effect(readCollateralTokenEffect, {
+    chainId,
+    blockNumber,
+    factoryAddress: factory,
+  })) as Address;
   await processMarket(
     context,
     {
@@ -68,20 +84,13 @@ MarketFactory.NewMarket.handler(async ({ event, context }) => {
 });
 
 MarketFactory.NewMarket.contractRegister(async ({ event, context }) => {
-  try {
-    const chainId = Number(event.chainId);
-    const blockNumber = event.block.number;
-    const factory = event.srcAddress as Address;
-    const marketAddr = event.params.market as Address;
-    const data = await fetchGenericMarketData(chainId, blockNumber, factory, marketAddr);
-    for (const token of data.wrappedTokens ?? []) {
-      context.addOutcomeToken(token);
-    }
-  } catch (e) {
-    // Keep the indexer running even if this external read fails.
-    context.log.error("Failed to register OutcomeToken contracts for NewMarket", {
-      error: e instanceof Error ? { message: e.message, stack: e.stack } : String(e),
-    });
+  const chainId = Number(event.chainId);
+  const blockNumber = event.block.number;
+  const factory = event.srcAddress as Address;
+  const marketAddr = event.params.market as Address;
+  const data = await fetchGenericMarketDataRaw(chainId, blockNumber, factory, marketAddr);
+  for (const token of data.wrappedTokens ?? []) {
+    context.addOutcomeToken(token);
   }
 });
 
@@ -90,15 +99,16 @@ FutarchyFactory.NewProposal.handler(async ({ event, context }) => {
   const blockNumber = event.block.number;
   const futarchyFactory = event.srcAddress as Address;
   const proposal = event.params.proposal as Address;
-  const data = await fetchFutarchyMarketData(
+  const dataJson = (await context.effect(fetchFutarchyMarketDataEffect, {
     chainId,
     blockNumber,
     futarchyFactory,
     proposal,
-    event.params.marketName,
-    event.params.conditionId,
-    event.params.questionId
-  );
+    marketName: event.params.marketName,
+    conditionId: event.params.conditionId,
+    questionId: event.params.questionId,
+  })) as string;
+  const data = parseMarketProcessInput(dataJson);
   await processMarket(
     context,
     {
@@ -112,6 +122,25 @@ FutarchyFactory.NewProposal.handler(async ({ event, context }) => {
     data,
     "0x0000000000000000000000000000000000000000" as Address
   );
+});
+
+FutarchyFactory.NewProposal.contractRegister(async ({ event, context }) => {
+  const chainId = Number(event.chainId);
+  const blockNumber = event.block.number;
+  const futarchyFactory = event.srcAddress as Address;
+  const proposal = event.params.proposal as Address;
+  const data = await fetchFutarchyMarketDataRaw(
+    chainId,
+    blockNumber,
+    futarchyFactory,
+    proposal,
+    event.params.marketName,
+    event.params.conditionId,
+    event.params.questionId,
+  );
+  for (const token of data.wrappedTokens ?? []) {
+    context.addOutcomeToken(token);
+  }
 });
 
 Reality.LogNewAnswer.handler(async ({ event, context }) => {

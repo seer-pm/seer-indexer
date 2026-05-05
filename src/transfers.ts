@@ -24,6 +24,7 @@ async function saveTransfer(event: any, context: any): Promise<void> {
 
   context.Transfer.set({
     id,
+    chainId: BigInt(chainId),
     token_id: tokenAddress,
     from: addrLower(event.params.from),
     to: addrLower(event.params.to),

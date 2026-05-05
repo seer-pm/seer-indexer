@@ -112,6 +112,7 @@ type Token {
 
 type Transfer {
   id: ID! # Transaction hash + log index (prefixed by chainId)
+  chainId: BigInt!
   token: Token!
   from: Bytes! # Address
   to: Bytes! # Address
