@@ -32,6 +32,7 @@ async function saveTransfer(event: any, context: any): Promise<void> {
     blockNumber: event.block.number,
     timestamp: event.block.timestamp,
     transactionHash: txHash,
+    logIndex: BigInt(event.logIndex),
   });
 }
 
