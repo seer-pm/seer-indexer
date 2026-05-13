@@ -264,6 +264,7 @@ ConditionalTokens.PositionSplit.handler(async ({ event, context }) => {
   );
   context.ConditionalEvent.set({
     id,
+    chainId: BigInt(chainId),
     market_id: full.id,
     accountId: (event.transaction as { from: Address }).from.toLowerCase(),
     eventType: "split",
@@ -303,6 +304,7 @@ ConditionalTokens.PositionsMerge.handler(async ({ event, context }) => {
   );
   context.ConditionalEvent.set({
     id,
+    chainId: BigInt(chainId),
     market_id: full.id,
     accountId: (event.transaction as { from: Address }).from.toLowerCase(),
     eventType: "merge",
@@ -342,6 +344,7 @@ ConditionalTokens.PayoutRedemption.handler(async ({ event, context }) => {
   );
   context.ConditionalEvent.set({
     id,
+    chainId: BigInt(chainId),
     market_id: full.id,
     accountId: (event.transaction as { from: Address }).from.toLowerCase(),
     eventType: "redeem",

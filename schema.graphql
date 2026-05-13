@@ -83,6 +83,7 @@ type Condition {
 
 type ConditionalEvent {
   id: ID!
+  chainId: BigInt!
   market: Market!
   accountId: Bytes!
   eventType: String!
