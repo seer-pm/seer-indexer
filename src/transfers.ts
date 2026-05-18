@@ -1,7 +1,7 @@
 // @ts-nocheck — Envio handler registration infers event/context as any until upstream fixes generated typings.
 import { MainCollateral, OutcomeToken, SerLpp } from "generated";
 import type { Address } from "viem";
-import { getConditionalTokensAddress, getMainCollateralAddress, getRouterAddress } from "./addresses";
+import { getConditionalTokensAddress, getMainCollateralAddresses, getRouterAddress } from "./addresses";
 import { entityId } from "./entityIds";
 
 function addrLower(a: Address | string): `0x${string}` {
@@ -38,12 +38,13 @@ async function saveTransfer(event: any, context: any): Promise<void> {
 
 function shouldIndexMainCollateralTransfer(event: any): boolean {
   const chainId = Number(event.chainId);
-  const mainCollateral = getMainCollateralAddress(chainId);
+  const mainCollaterals = getMainCollateralAddresses(chainId);
   const router = getRouterAddress(chainId);
-  if (!mainCollateral || !router) return false;
+  if (mainCollaterals.length === 0 || !router) return false;
 
   const tokenAddress = addrLower(event.srcAddress);
-  const isMainCollateral = tokenAddress === addrLower(mainCollateral);
+  const mainCollateralSet = new Set(mainCollaterals.map(addrLower));
+  const isMainCollateral = mainCollateralSet.has(tokenAddress);
   if (!isMainCollateral) return false;
 
   const routerAddr = addrLower(router);

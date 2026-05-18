@@ -24,12 +24,17 @@ export function getRouterAddress(chainId: number): Address | null {
   return null;
 }
 
-export function getMainCollateralAddress(chainId: number): Address | null {
-  if (chainId === 100) return "0xaf204776c7245bf4147c2612bf6e5972ee483701"; // gnosis
-  if (chainId === 1) return "0x83f20f44975d03b1b09e64809b757c47f942beea"; // mainnet
-  if (chainId === 10) return "0xb5b2dc7fd34c249f4be7fb1fcea07950784229e0"; // optimism
-  if (chainId === 8453) return "0x5875eee11cf8398102fdad704c9e96607675467a"; // base
-  return null;
+export function getMainCollateralAddresses(chainId: number): Address[] {
+  if (chainId === 100) {
+    return [
+      "0xaf204776c7245bf4147c2612bf6e5972ee483701",
+      "0xeef7b1f06b092625228c835dd5d5b14641d1e54a",
+    ]; // gnosis
+  }
+  if (chainId === 1) return ["0x83f20f44975d03b1b09e64809b757c47f942beea"]; // mainnet
+  if (chainId === 10) return ["0xb5b2dc7fd34c249f4be7fb1fcea07950784229e0"]; // optimism
+  if (chainId === 8453) return ["0x5875eee11cf8398102fdad704c9e96607675467a"]; // base
+  return [];
 }
 
 export function getConditionalTokensAddress(chainId: number): Address | null {

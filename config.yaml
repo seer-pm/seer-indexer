@@ -99,11 +99,14 @@ networks:
         address:
           - 0x83183da839ce8228e31ae41222ead9edbb5cdcf1
           - 0x1246c7e5ac59ba73a45a62e3081b548f02f58e90
+          - 0x2e3937ceff8e0ac5563b5d212bbe8f6cb8ecb68e
         start_block: 36404701
       - name: OutcomeToken
         address: null
       - name: MainCollateral
-        address: 0xaf204776c7245bf4147c2612bf6e5972ee483701
+        address:
+          - 0xaf204776c7245bf4147c2612bf6e5972ee483701
+          - 0xeef7b1f06b092625228c835dd5d5b14641d1e54a
         start_block: 36404701
       - name: SerLpp
         address: 0xa7a7f8d1770c08e2e1f55d8c6427c1f8213a34da
