@@ -20,6 +20,7 @@ async function saveTransfer(event: any, context: any): Promise<void> {
   await ensureToken(context, tokenAddress);
 
   const txHash = (event.transaction as { hash: string }).hash?.toLowerCase();
+  const txFrom = addrLower((event.transaction as { from: string }).from);
   const id = entityId(chainId, `${txHash}-${event.logIndex}`);
 
   context.Transfer.set({
@@ -32,6 +33,7 @@ async function saveTransfer(event: any, context: any): Promise<void> {
     blockNumber: event.block.number,
     timestamp: event.block.timestamp,
     transactionHash: txHash,
+    transactionFrom: txFrom,
     logIndex: BigInt(event.logIndex),
   });
 }

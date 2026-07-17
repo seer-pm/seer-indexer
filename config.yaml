@@ -74,6 +74,7 @@ contracts:
         field_selection:
           transaction_fields:
             - hash
+            - from
   - name: MainCollateral
     abi_file_path: ./abis/erc20.json
     handler: ./src/transfers.ts
@@ -82,6 +83,7 @@ contracts:
         field_selection:
           transaction_fields:
             - hash
+            - from
   - name: SerLpp
     abi_file_path: ./abis/erc20.json
     handler: ./src/transfers.ts
@@ -90,6 +92,7 @@ contracts:
         field_selection:
           transaction_fields:
             - hash
+            - from
 
 networks:
   - id: 100

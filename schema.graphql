@@ -121,5 +121,6 @@ type Transfer {
   blockNumber: BigInt!
   timestamp: BigInt!
   transactionHash: Bytes!
+  transactionFrom: Bytes! # tx.origin / transaction.from
   logIndex: BigInt!
 }
