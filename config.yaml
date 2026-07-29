@@ -1,14 +1,11 @@
 # yaml-language-server: $schema=./node_modules/envio/evm.schema.json
 name: seer-pm-indexer
 description: Seer PM markets indexer (HyperIndex)
-unordered_multichain_mode: true
-preload_handlers: false
 address_format: lowercase
 
 contracts:
   - name: MarketFactory
     abi_file_path: ./abis/MarketFactory.json
-    handler: ./src/EventHandlers.ts
     events:
       - event: NewMarket(address indexed market, string marketName, address parentMarket, bytes32 conditionId, bytes32 questionId, bytes32[] questionsIds)
         field_selection:
@@ -17,7 +14,6 @@ contracts:
             - from
   - name: FutarchyFactory
     abi_file_path: ./abis/FutarchyFactory.json
-    handler: ./src/EventHandlers.ts
     events:
       - event: NewProposal(address indexed proposal, string marketName, bytes32 conditionId, bytes32 questionId)
         field_selection:
@@ -26,7 +22,6 @@ contracts:
             - from
   - name: Reality
     abi_file_path: ./abis/Realitiy.json
-    handler: ./src/EventHandlers.ts
     events:
       - event: LogNewAnswer(bytes32 answer, bytes32 indexed question_id, bytes32 history_hash, address indexed user, uint256 bond, uint256 ts, bool is_commitment)
       - event: LogFinalize(bytes32 indexed question_id, bytes32 indexed answer)
@@ -35,7 +30,6 @@ contracts:
       - event: LogCancelArbitration(bytes32 indexed question_id)
   - name: ConditionalTokens
     abi_file_path: ./abis/ConditionalTokens.json
-    handler: ./src/EventHandlers.ts
     events:
       - event: PositionSplit(address indexed stakeholder, address collateralToken, bytes32 indexed parentCollectionId, bytes32 indexed conditionId, uint256[] partition, uint256 amount)
         field_selection:
@@ -58,17 +52,14 @@ contracts:
       - event: ConditionResolution(bytes32 indexed conditionId, address indexed oracle, bytes32 indexed questionId, uint256 outcomeSlotCount, uint256[] payoutNumerators)
   - name: CurateIEvidence
     abi_file_path: ./abis/IEvidence.json
-    handler: ./src/EventHandlers.ts
     events:
       - event: MetaEvidence(uint256 indexed _metaEvidenceID, string _evidence)
   - name: ArbitratorIEvidence
     abi_file_path: ./abis/IEvidence.json
-    handler: ./src/EventHandlers.ts
     events:
       - event: MetaEvidence(uint256 indexed _metaEvidenceID, string _evidence)
   - name: OutcomeToken
     abi_file_path: ./abis/erc20.json
-    handler: ./src/transfers.ts
     events:
       - event: Transfer(address indexed from, address indexed to, uint256 value)
         field_selection:
@@ -77,7 +68,6 @@ contracts:
             - from
   - name: MainCollateral
     abi_file_path: ./abis/erc20.json
-    handler: ./src/transfers.ts
     events:
       - event: Transfer(address indexed from, address indexed to, uint256 value)
         field_selection:
@@ -86,7 +76,6 @@ contracts:
             - from
   - name: SerLpp
     abi_file_path: ./abis/erc20.json
-    handler: ./src/transfers.ts
     events:
       - event: Transfer(address indexed from, address indexed to, uint256 value)
         field_selection:
@@ -94,7 +83,7 @@ contracts:
             - hash
             - from
 
-networks:
+chains:
   - id: 100
     start_block: 36336124
     contracts:

@@ -1,8 +1,8 @@
-// @ts-nocheck — Envio handler registration infers event/context as any until upstream fixes generated typings.
-import { MainCollateral, OutcomeToken, SerLpp } from "generated";
+// @ts-nocheck — Envio handler registration infers event/context loosely until typings settle.
+import { indexer } from "envio";
 import type { Address } from "viem";
-import { getConditionalTokensAddress, getMainCollateralAddresses, getRouterAddress } from "./addresses";
-import { entityId } from "./entityIds";
+import { getConditionalTokensAddress, getMainCollateralAddresses, getRouterAddress } from "../addresses";
+import { entityId } from "../entityIds";
 
 function addrLower(a: Address | string): `0x${string}` {
   return (a as string).toLowerCase() as `0x${string}`;
@@ -65,16 +65,24 @@ function shouldIndexMainCollateralTransfer(event: any): boolean {
   return true;
 }
 
-OutcomeToken.Transfer.handler(async ({ event, context }) => {
-  await saveTransfer(event, context);
-});
+indexer.onEvent(
+  { contract: "OutcomeToken", event: "Transfer" },
+  async ({ event, context }) => {
+    await saveTransfer(event, context);
+  }
+);
 
-MainCollateral.Transfer.handler(async ({ event, context }) => {
-  if (!shouldIndexMainCollateralTransfer(event)) return;
-  await saveTransfer(event, context);
-});
+indexer.onEvent(
+  { contract: "MainCollateral", event: "Transfer" },
+  async ({ event, context }) => {
+    if (!shouldIndexMainCollateralTransfer(event)) return;
+    await saveTransfer(event, context);
+  }
+);
 
-SerLpp.Transfer.handler(async ({ event, context }) => {
-  await saveTransfer(event, context);
-});
-
+indexer.onEvent(
+  { contract: "SerLpp", event: "Transfer" },
+  async ({ event, context }) => {
+    await saveTransfer(event, context);
+  }
+);
