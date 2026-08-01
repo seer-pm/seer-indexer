@@ -45,3 +45,18 @@ export function getConditionalTokensAddress(chainId: number): Address | null {
   if (chainId === 8453) return "0xab797c4c6022a401c31543e316d3cd04c67a87fc"; // base
   return null;
 }
+
+export function getLimitOrderHookAddress(chainId: number): Address | null {
+  if (chainId === 1) return "0xe10a429d18e90fbd44be3678d2ae1ef3c1691040";
+  if (chainId === 10) return "0x1f78e79c20d1e77526ac21e3651fabfc22035040";
+  if (chainId === 8453) return "0x19e8b37e9f4d69927da1e13e989a2f955ee39040";
+  return null;
+}
+
+/** Uniswap V4 StateView (canonical per-chain). */
+export function getStateViewAddress(chainId: number): Address | null {
+  if (chainId === 1) return "0x7ffe42c4a5deea5b0fec41c94c136cf115597227";
+  if (chainId === 10) return "0xc18a3169788f4f75a170290584eca6395c75ecdb";
+  if (chainId === 8453) return "0xa3c0c9b65bad0b08107aa264b0f3db444b867a71";
+  return null;
+}

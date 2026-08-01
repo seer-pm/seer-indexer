@@ -124,3 +124,75 @@ type Transfer {
   transactionFrom: Bytes! # tx.origin / transaction.from
   logIndex: BigInt!
 }
+
+enum OrderEventType {
+  PLACE
+  FILL
+  CANCEL
+  WITHDRAW
+}
+
+enum UserOrderStatus {
+  OPEN
+  FILLED
+  WITHDRAWN
+  CANCELLED
+}
+
+type LimitOrderPool {
+  id: ID!
+  chainId: BigInt!
+  poolId: Bytes!
+  currency0: Bytes!
+  currency1: Bytes!
+  fee: Int!
+  tickSpacing: Int!
+  hooks: Bytes!
+  initialized: Boolean!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+type OrderLevel {
+  id: ID!
+  chainId: BigInt!
+  pool: LimitOrderPool!
+  orderId: BigInt!
+  tickLower: Int!
+  zeroForOne: Boolean!
+  liquidityTotal: BigInt!
+  price0AtTick: BigDecimal!
+  price1AtTick: BigDecimal!
+  side: String!
+  updatedAtBlock: BigInt!
+  participants: [Bytes!]!
+}
+
+type UserOrder {
+  id: ID!
+  chainId: BigInt!
+  orderId: BigInt! @index
+  owner: Bytes! @index
+  pool: LimitOrderPool!
+  tickLower: Int!
+  zeroForOne: Boolean!
+  liquidity: BigInt!
+  status: UserOrderStatus!
+  placedAtBlock: BigInt!
+  updatedAtBlock: BigInt!
+}
+
+type OrderEvent {
+  id: ID!
+  chainId: BigInt!
+  type: OrderEventType!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+  owner: Bytes
+  orderId: BigInt! @index
+  pool: LimitOrderPool!
+  tickLower: Int
+  zeroForOne: Boolean
+  liquidity: BigInt
+}

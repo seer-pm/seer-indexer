@@ -1,0 +1,134 @@
+[
+  {
+    "type": "event",
+    "name": "Place",
+    "anonymous": false,
+    "inputs": [
+      { "name": "owner", "type": "address", "indexed": true },
+      { "name": "orderId", "type": "uint232", "indexed": true },
+      {
+        "name": "key",
+        "type": "tuple",
+        "indexed": false,
+        "components": [
+          { "name": "currency0", "type": "address" },
+          { "name": "currency1", "type": "address" },
+          { "name": "fee", "type": "uint24" },
+          { "name": "tickSpacing", "type": "int24" },
+          { "name": "hooks", "type": "address" }
+        ]
+      },
+      { "name": "tickLower", "type": "int24", "indexed": false },
+      { "name": "zeroForOne", "type": "bool", "indexed": false },
+      { "name": "liquidity", "type": "uint128", "indexed": false }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "Fill",
+    "anonymous": false,
+    "inputs": [
+      { "name": "orderId", "type": "uint232", "indexed": true },
+      {
+        "name": "key",
+        "type": "tuple",
+        "indexed": false,
+        "components": [
+          { "name": "currency0", "type": "address" },
+          { "name": "currency1", "type": "address" },
+          { "name": "fee", "type": "uint24" },
+          { "name": "tickSpacing", "type": "int24" },
+          { "name": "hooks", "type": "address" }
+        ]
+      },
+      { "name": "tickLower", "type": "int24", "indexed": false },
+      { "name": "zeroForOne", "type": "bool", "indexed": false }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "Cancel",
+    "anonymous": false,
+    "inputs": [
+      { "name": "owner", "type": "address", "indexed": true },
+      { "name": "orderId", "type": "uint232", "indexed": true },
+      {
+        "name": "key",
+        "type": "tuple",
+        "indexed": false,
+        "components": [
+          { "name": "currency0", "type": "address" },
+          { "name": "currency1", "type": "address" },
+          { "name": "fee", "type": "uint24" },
+          { "name": "tickSpacing", "type": "int24" },
+          { "name": "hooks", "type": "address" }
+        ]
+      },
+      { "name": "tickLower", "type": "int24", "indexed": false },
+      { "name": "zeroForOne", "type": "bool", "indexed": false },
+      { "name": "liquidity", "type": "uint128", "indexed": false }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "Withdraw",
+    "anonymous": false,
+    "inputs": [
+      { "name": "owner", "type": "address", "indexed": true },
+      { "name": "orderId", "type": "uint232", "indexed": true },
+      { "name": "liquidity", "type": "uint128", "indexed": false }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getOrderId",
+    "stateMutability": "view",
+    "inputs": [
+      {
+        "name": "key",
+        "type": "tuple",
+        "components": [
+          { "name": "currency0", "type": "address" },
+          { "name": "currency1", "type": "address" },
+          { "name": "fee", "type": "uint24" },
+          { "name": "tickSpacing", "type": "int24" },
+          { "name": "hooks", "type": "address" }
+        ]
+      },
+      { "name": "tickLower", "type": "int24" },
+      { "name": "zeroForOne", "type": "bool" }
+    ],
+    "outputs": [{ "name": "", "type": "uint232" }]
+  },
+  {
+    "type": "function",
+    "name": "getOrderInfo",
+    "stateMutability": "view",
+    "inputs": [{ "name": "orderId", "type": "uint232" }],
+    "outputs": [
+      { "name": "filled", "type": "bool" },
+      { "name": "currency0", "type": "address" },
+      { "name": "currency1", "type": "address" },
+      { "name": "currency0Total", "type": "uint256" },
+      { "name": "currency1Total", "type": "uint256" },
+      { "name": "liquidityTotal", "type": "uint128" }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getOrderLiquidity",
+    "stateMutability": "view",
+    "inputs": [
+      { "name": "orderId", "type": "uint232" },
+      { "name": "owner", "type": "address" }
+    ],
+    "outputs": [{ "name": "", "type": "uint256" }]
+  },
+  {
+    "type": "function",
+    "name": "poolManager",
+    "stateMutability": "view",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address" }]
+  }
+]
