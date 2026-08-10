@@ -85,12 +85,15 @@ type ConditionalEvent {
   id: ID!
   chainId: BigInt!
   market: Market!
-  accountId: Bytes!
+  accountId: Bytes! @index
+  stakeholder: Bytes! @index
   eventType: String!
   amount: BigInt!
   blockNumber: BigInt!
-  timestamp: BigInt!
+  timestamp: BigInt! @index
   collateral: Bytes!
+  parentCollectionId: Bytes!
+  conditionId: Bytes! @index
   transactionHash: Bytes!
 }
 
@@ -106,23 +109,75 @@ type ArbitratorMetadata {
   registrationMetaEvidenceURI: String!
 }
 
+enum TransferKind {
+  outcome
+  router_collateral
+  lpp
+}
+
 type Token {
   id: ID! # Token contract address
   transfers: [Transfer!]! @derivedFrom(field: "token")
+}
+
+"""Maps an outcome wrapped token to its market (per chain)."""
+type OutcomeTokenMarket {
+  id: ID! # chainId:token
+  chainId: BigInt!
+  token: Bytes! @index
+  market: Market!
 }
 
 type Transfer {
   id: ID! # Transaction hash + log index (prefixed by chainId)
   chainId: BigInt!
   token: Token!
-  from: Bytes! # Address
-  to: Bytes! # Address
+  from: Bytes! @index
+  to: Bytes! @index
   value: BigInt!
   blockNumber: BigInt!
-  timestamp: BigInt!
+  timestamp: BigInt! @index
   transactionHash: Bytes!
   transactionFrom: Bytes! # tx.origin / transaction.from
   logIndex: BigInt!
+  kind: TransferKind!
+  involvesRouter: Boolean!
+  market: Market
+}
+
+"""Current (head) ERC-20 balance for an indexed token + account."""
+type TokenBalance {
+  id: ID! # chainId:token:account
+  chainId: BigInt!
+  token: Bytes! @index
+  account: Bytes! @index
+  balance: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+  """dayStartTimestamp of the latest TokenBalanceDaily row for this account+token (0 if none)."""
+  lastDailyDayStart: BigInt!
+}
+
+"""
+Sparse end-of-day balance: one row per (account, token, day) only when there was a transfer that day.
+Balance at EOD of day D = latest row with dayStartTimestamp <= D.
+"""
+type TokenBalanceDaily {
+  id: ID! # chainId:account:token:dayStart
+  chainId: BigInt!
+  account: Bytes! @index
+  token: Bytes! @index
+  dayStartTimestamp: BigInt! @index
+  balance: BigInt!
+}
+
+type AccountActivity {
+  id: ID! # chainId:account
+  chainId: BigInt!
+  account: Bytes! @index
+  earliestTransferTimestamp: BigInt!
+  lastTransferTimestamp: BigInt!
+  transferCount: BigInt!
 }
 
 enum OrderEventType {

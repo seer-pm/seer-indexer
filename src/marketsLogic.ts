@@ -188,4 +188,14 @@ export async function processMarket(
     openingTs,
     marketQuestionIds: mqIds,
   });
+
+  for (const wt of data.wrappedTokens) {
+    const token = addrLower(wt) as `0x${string}`;
+    context.OutcomeTokenMarket.set({
+      id: entityId(chainId, token),
+      chainId: BigInt(chainId),
+      token,
+      market_id: marketId,
+    });
+  }
 }
