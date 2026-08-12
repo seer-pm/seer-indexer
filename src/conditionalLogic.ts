@@ -25,11 +25,53 @@ const redeemMethods: MethodSig[] = [
   { name: "redeemProposal", signature: "0x3f325a2b", marketParamPos: 0 },
 ];
 
+/** Wrap-in: `splitFrom*` — user pays secondary/base; primary never appears as user↔router ERC20. */
+const WRAP_SPLIT_SIGNATURES = new Set(
+  splitMethods.filter((m) => m.name.startsWith("splitFrom")).map((m) => m.signature),
+);
+/** Wrap-out: `mergeTo*` / `redeemTo*` — user receives secondary/base; primary never as router↔user ERC20. */
+const WRAP_MERGE_REDEEM_SIGNATURES = new Set([
+  ...mergeMethods.filter((m) => m.name.startsWith("mergeTo")).map((m) => m.signature),
+  ...redeemMethods.filter((m) => m.name.startsWith("redeemTo")).map((m) => m.signature),
+]);
+
 function getMethodSignature(methods: MethodSig[], methodId: string): MethodSig | null {
   for (const m of methods) {
     if (m.signature === methodId) return m;
   }
   return null;
+}
+
+export function txMethodId(input: `0x${string}` | string | undefined | null): string | null {
+  if (!input || input.length < 10) return null;
+  return input.slice(0, 10).toLowerCase();
+}
+
+/**
+ * True if any known wrap selector appears anywhere in calldata (not only top-level).
+ * Covers multicall / aggregators / nested router calls without decoding their ABIs.
+ */
+function inputContainsSelector(
+  input: `0x${string}` | string | undefined | null,
+  signatures: Set<string>,
+): boolean {
+  if (!input || input.length < 10) return false;
+  const hex = input.toLowerCase();
+  for (const sig of signatures) {
+    const body = sig.startsWith("0x") ? sig.slice(2) : sig;
+    if (hex.includes(body)) return true;
+  }
+  return false;
+}
+
+/** `splitFromBase` / `splitFromDai` — need synthetic primary debit attributed to tx.from. */
+export function isWrapSplitMethod(input: `0x${string}` | string | undefined | null): boolean {
+  return inputContainsSelector(input, WRAP_SPLIT_SIGNATURES);
+}
+
+/** `mergeToBase` / `mergeToDai` / `redeemToBase` / `redeemToDai` — need synthetic primary credit. */
+export function isWrapMergeRedeemMethod(input: `0x${string}` | string | undefined | null): boolean {
+  return inputContainsSelector(input, WRAP_MERGE_REDEEM_SIGNATURES);
 }
 
 function decodeAddressArgInner(input: `0x${string}`, marketParamPos: number): Address | null {

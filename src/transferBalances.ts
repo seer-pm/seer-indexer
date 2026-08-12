@@ -43,11 +43,14 @@ export function outcomeTokenMarketId(chainId: number, token: string): string {
   return entityId(chainId, addrLower(token));
 }
 
-export function involvesRouter(chainId: number, from: string, to: string): boolean {
+export function isSeerRouterAddress(chainId: number, address: string): boolean {
   const router = getRouterAddress(chainId);
   if (!router) return false;
-  const r = addrLower(router);
-  return addrLower(from) === r || addrLower(to) === r;
+  return addrLower(address) === addrLower(router);
+}
+
+export function involvesRouter(chainId: number, from: string, to: string): boolean {
+  return isSeerRouterAddress(chainId, from) || isSeerRouterAddress(chainId, to);
 }
 
 function clampNonNegative(v: bigint): bigint {
