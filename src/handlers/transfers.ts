@@ -127,7 +127,29 @@ indexer.onEvent(
 );
 
 indexer.onEvent(
-  { contract: "MainCollateral", event: "Transfer" },
+  {
+    contract: "MainCollateral",
+    event: "Transfer",
+    /**
+     * Ingestion filter: this rides along in the HyperSync query (topic1/topic2),
+     * it is not applied after the fact. It mirrors the POSITIVE half of
+     * `shouldIndexMainCollateralTransfer`; the negative half (dropping legs that
+     * also touch the ConditionalTokens) cannot be expressed as a topic filter and
+     * stays in the handler.
+     *
+     * Measured across the four chains: ~12.05M Transfers ingested without it,
+     * ~59k with it.
+     */
+    where: ({ chain }) => {
+      const router = getRouterAddress(chain.id);
+      // Without a router the handler could never index anything on this chain,
+      // so skip it entirely instead of ingesting and discarding.
+      if (!router) return false;
+      const routerAddr = addrLower(router);
+      // An array of params is an OR; each entry pins one indexed parameter.
+      return { params: [{ from: routerAddr }, { to: routerAddr }] };
+    },
+  },
   async ({ event, context }) => {
     if (!shouldIndexMainCollateralTransfer(event)) return;
     await saveTransfer(event, context, "router_collateral");

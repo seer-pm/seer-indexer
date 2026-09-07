@@ -1,7 +1,11 @@
 // @ts-nocheck — Envio handler registration infers event/context loosely until typings settle.
 import { indexer } from "envio";
 import type { Address } from "viem";
-import { getRouterAddress } from "../addresses";
+import {
+  getCtfRouterAddresses,
+  getRealityProxyAddresses,
+  getRouterAddress,
+} from "../addresses";
 import {
   collateralForSplitMerge,
   isWrapMergeRedeemMethod,
@@ -76,8 +80,33 @@ async function maybeEmitWrapCollateral(
   });
 }
 
+/**
+ * Ingestion filter for the shared ConditionalTokens.
+ *
+ * On Gnosis this is the canonical CTF, shared with Omen and others: 99.2% of the
+ * split/merge/redeem events we ingest today are not on a Seer condition and the
+ * handler drops them right after `context.Condition.get(...)`. Every Seer
+ * operation goes through the Router or the FutarchyRouter, so narrowing on that
+ * parameter keeps 374,115 of the 374,144 Seer-condition events while cutting
+ * ~2M events from the query.
+ *
+ * The parameter is named `stakeholder` on split/merge and `redeemer` on
+ * redemption, hence the argument.
+ */
+const ctfActorFilter =
+  (param: "stakeholder" | "redeemer") =>
+  ({ chain }: { chain: { id: number } }) => {
+    const routers = getCtfRouterAddresses(chain.id);
+    if (!routers) return true; // low-traffic chains: ingest everything
+    return { params: { [param]: routers } }; // array in a field position = match any
+  };
+
 indexer.onEvent(
-  { contract: "ConditionalTokens", event: "PositionSplit" },
+  {
+    contract: "ConditionalTokens",
+    event: "PositionSplit",
+    where: ctfActorFilter("stakeholder"),
+  },
   async ({ event, context }) => {
     const chainId = Number(event.chainId);
     const rawConditionId = qid(event.params.conditionId as `0x${string}`);
@@ -137,7 +166,11 @@ indexer.onEvent(
 );
 
 indexer.onEvent(
-  { contract: "ConditionalTokens", event: "PositionsMerge" },
+  {
+    contract: "ConditionalTokens",
+    event: "PositionsMerge",
+    where: ctfActorFilter("stakeholder"),
+  },
   async ({ event, context }) => {
     const chainId = Number(event.chainId);
     const rawConditionId = qid(event.params.conditionId as `0x${string}`);
@@ -196,7 +229,11 @@ indexer.onEvent(
 );
 
 indexer.onEvent(
-  { contract: "ConditionalTokens", event: "PayoutRedemption" },
+  {
+    contract: "ConditionalTokens",
+    event: "PayoutRedemption",
+    where: ctfActorFilter("redeemer"),
+  },
   async ({ event, context }) => {
     const chainId = Number(event.chainId);
     const rawConditionId = qid(event.params.conditionId as `0x${string}`);
@@ -255,7 +292,19 @@ indexer.onEvent(
 );
 
 indexer.onEvent(
-  { contract: "ConditionalTokens", event: "ConditionResolution" },
+  {
+    contract: "ConditionalTokens",
+    event: "ConditionResolution",
+    /**
+     * Every Seer condition is prepared with the RealityProxy as its `oracle`, so
+     * this is lossless: there is no Seer condition resolved by anyone else.
+     */
+    where: ({ chain }) => {
+      const oracles = getRealityProxyAddresses(chain.id);
+      if (oracles.length === 0) return false;
+      return { params: { oracle: oracles } };
+    },
+  },
   async ({ event, context }) => {
     const chainId = Number(event.chainId);
     const conditionId = entityId(chainId, qid(event.params.conditionId as `0x${string}`));
