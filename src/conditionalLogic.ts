@@ -64,7 +64,7 @@ function inputContainsSelector(
   return false;
 }
 
-/** `splitFromBase` / `splitFromDai` — need synthetic primary debit attributed to tx.from. */
+/** `splitFromBase` / `splitFromDai` — need synthetic primary debit attributed to the resolved account. */
 export function isWrapSplitMethod(input: `0x${string}` | string | undefined | null): boolean {
   return inputContainsSelector(input, WRAP_SPLIT_SIGNATURES);
 }

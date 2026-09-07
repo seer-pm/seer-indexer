@@ -36,18 +36,21 @@ contracts:
           transaction_fields:
             - hash
             - from
+            - to
             - input
       - event: PositionsMerge(address indexed stakeholder, address collateralToken, bytes32 indexed parentCollectionId, bytes32 indexed conditionId, uint256[] partition, uint256 amount)
         field_selection:
           transaction_fields:
             - hash
             - from
+            - to
             - input
       - event: PayoutRedemption(address indexed redeemer, address indexed collateralToken, bytes32 indexed parentCollectionId, bytes32 conditionId, uint256[] indexSets, uint256 payout)
         field_selection:
           transaction_fields:
             - hash
             - from
+            - to
             - input
       - event: ConditionResolution(bytes32 indexed conditionId, address indexed oracle, bytes32 indexed questionId, uint256 outcomeSlotCount, uint256[] payoutNumerators)
   - name: CurateIEvidence

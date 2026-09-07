@@ -9,6 +9,7 @@ import {
 } from "../conditionalLogic";
 import { entityId } from "../entityIds";
 import { saveEconomicRouterCollateral } from "../economicTransfers";
+import { resolveAccountId } from "../accountAttribution";
 import { addrLower, isSeerRouterAddress } from "../transferBalances";
 
 function qid(p: `0x${string}` | string): string {
@@ -36,16 +37,6 @@ function conditionalEventId(
   marketId: string,
 ): string {
   return entityId(chainId, `${txHash}-${logIndex}-${marketId}`);
-}
-
-/**
- * When the on-chain stakeholder/redeemer is the Seer router (wrap methods like
- * `splitFromDai`, or non-wrap `splitPosition` / `mergePositions` / redeem via router),
- * attribute `accountId` to `transaction.from` so portfolio queries by user address resolve.
- */
-function resolveAccountId(chainId: number, onChainParty: `0x${string}`, txFrom: `0x${string}`): `0x${string}` {
-  if (isSeerRouterAddress(chainId, onChainParty)) return txFrom;
-  return onChainParty;
 }
 
 async function maybeEmitWrapCollateral(
@@ -99,8 +90,9 @@ indexer.onEvent(
     const stakeholder = addrLower(event.params.stakeholder as Address);
     const txHash = (event.transaction as { hash: string }).hash.toLowerCase();
     const txFrom = addrLower((event.transaction as { from: string }).from);
+    const txTo = (event.transaction as { to?: string | null }).to;
     const txInput = (event.transaction as { input?: string }).input;
-    const accountId = resolveAccountId(chainId, stakeholder, txFrom);
+    const accountId = resolveAccountId(chainId, stakeholder, { from: txFrom, to: txTo });
     const emitWrapDebit = isSeerRouterAddress(chainId, stakeholder) && isWrapSplitMethod(txInput);
 
     for (const market of markets) {
@@ -158,8 +150,9 @@ indexer.onEvent(
     const stakeholder = addrLower(event.params.stakeholder as Address);
     const txHash = (event.transaction as { hash: string }).hash.toLowerCase();
     const txFrom = addrLower((event.transaction as { from: string }).from);
+    const txTo = (event.transaction as { to?: string | null }).to;
     const txInput = (event.transaction as { input?: string }).input;
-    const accountId = resolveAccountId(chainId, stakeholder, txFrom);
+    const accountId = resolveAccountId(chainId, stakeholder, { from: txFrom, to: txTo });
     const emitWrapCredit = isSeerRouterAddress(chainId, stakeholder) && isWrapMergeRedeemMethod(txInput);
 
     for (const market of markets) {
@@ -216,8 +209,9 @@ indexer.onEvent(
     const stakeholder = addrLower(event.params.redeemer as Address);
     const txHash = (event.transaction as { hash: string }).hash.toLowerCase();
     const txFrom = addrLower((event.transaction as { from: string }).from);
+    const txTo = (event.transaction as { to?: string | null }).to;
     const txInput = (event.transaction as { input?: string }).input;
-    const accountId = resolveAccountId(chainId, stakeholder, txFrom);
+    const accountId = resolveAccountId(chainId, stakeholder, { from: txFrom, to: txTo });
     const emitWrapCredit = isSeerRouterAddress(chainId, stakeholder) && isWrapMergeRedeemMethod(txInput);
 
     for (const market of markets) {
