@@ -27,7 +27,14 @@ export function getPublicClient(chainId: number): any {
   const url = optionalIndexerRpcUrl(chainId);
   const client = createPublicClient({
     chain,
-    transport: http(url, { batch: true }),
+    // Bounded batching. contractRegister fires one getMarket per NewMarket in a
+    // HyperSync response, all in the same tick, so viem packs them into a single
+    // JSON-RPC request. A sparse query can hand us a chain's entire factory
+    // history at once — 520 markets on optimism — and getMarket averages ~44KB
+    // per market there, so that batch is ~22MiB of response. It blew past the
+    // provider's 10MiB body cap (~235 calls is enough), failing the whole batch
+    // and every retry of it. 25 keeps a batch near 1MiB.
+    transport: http(url, { batch: { batchSize: 25 } }),
   });
   clients.set(chainId, client);
   return client;
