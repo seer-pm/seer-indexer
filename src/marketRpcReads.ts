@@ -8,6 +8,7 @@ import { getPublicClient } from "./chain";
 import { getMarketViewAddress } from "./addresses";
 import MarketViewAbi from "../abis/MarketView.json";
 import MarketFactoryAbi from "../abis/MarketFactory.json";
+import MarketAbi from "../abis/Market.json";
 import FutarchyFactoryAbi from "../abis/FutarchyFactory.json";
 import FutarchyProposalAbi from "../abis/FutarchyProposal.json";
 import RealityAbi from "../abis/Realitiy.json";
@@ -92,18 +93,33 @@ export async function fetchGenericMarketDataRaw(
   };
 }
 
+/**
+ * Base collateral of a generic market. A market created with a per-market collateral stores it
+ * (`Market.collateralToken()`); a market from a factory with a fixed collateral has no such getter,
+ * so the call reverts and the factory's `collateralToken()` is the answer.
+ */
 export async function readCollateralTokenRaw(
   chainId: number,
   blockNumber: bigint,
   factoryAddress: Address,
+  marketAddress: Address,
 ): Promise<Address> {
   const client = getPublicClient(chainId);
-  return client.readContract({
-    address: factoryAddress,
-    abi: MarketFactoryAbi as readonly unknown[],
-    functionName: "collateralToken",
-    blockNumber,
-  }) as Promise<Address>;
+  try {
+    return (await client.readContract({
+      address: marketAddress,
+      abi: MarketAbi as readonly unknown[],
+      functionName: "collateralToken",
+      blockNumber,
+    })) as Address;
+  } catch {
+    return client.readContract({
+      address: factoryAddress,
+      abi: MarketFactoryAbi as readonly unknown[],
+      functionName: "collateralToken",
+      blockNumber,
+    }) as Promise<Address>;
+  }
 }
 
 export async function fetchFutarchyMarketDataRaw(

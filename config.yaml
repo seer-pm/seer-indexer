@@ -4,6 +4,9 @@ description: Seer PM markets indexer (HyperIndex)
 address_format: lowercase
 
 contracts:
+  # Covers every MarketFactory version: the NewMarket event is the same, and the collateral is read
+  # from the market when it stores it (per-market collateral) or from the factory otherwise. Add the
+  # address of each new deployment under the chain's MarketFactory list.
   - name: MarketFactory
     abi_file_path: ./abis/MarketFactory.json
     events:

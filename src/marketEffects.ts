@@ -33,11 +33,13 @@ export const fetchGenericMarketDataEffect = createEffect(
 
 export const readCollateralTokenEffect = createEffect(
   {
-    name: "readCollateralToken_v2",
+    // The result depends on the market, so the cache key has to include it.
+    name: "readCollateralToken_v3",
     input: {
       chainId: S.number,
       blockNumber: S.bigint,
       factoryAddress: S.string,
+      marketAddress: S.string,
     },
     output: S.string,
     rateLimit: false,
@@ -48,6 +50,7 @@ export const readCollateralTokenEffect = createEffect(
       input.chainId,
       input.blockNumber,
       input.factoryAddress as Address,
+      input.marketAddress as Address,
     );
     return addr as string;
   },

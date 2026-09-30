@@ -32,6 +32,7 @@ indexer.onEvent(
       chainId,
       blockNumber,
       factoryAddress: factory,
+      marketAddress: marketAddr,
     })) as Address;
     await processMarket(
       context,
