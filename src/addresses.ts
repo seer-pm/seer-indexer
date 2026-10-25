@@ -89,6 +89,10 @@ export function getCtfRouterAddresses(chainId: number): Address[] | null {
 /**
  * RealityProxy per chain — the `oracle` of every condition Seer prepares.
  * Read on-chain via `realityProxy()` on the factories in config.yaml.
+ *
+ * IMPORTANT: a MarketFactory on another Reality version comes with its own RealityProxy. Add it
+ * here when the factory goes into config.yaml, or ConditionResolution for its markets is dropped
+ * at ingestion and they never resolve.
  */
 export function getRealityProxyAddresses(chainId: number): Address[] {
   if (chainId === 100) {

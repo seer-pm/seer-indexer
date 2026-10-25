@@ -132,7 +132,9 @@ chains:
         address: 0xa6cb18fcdc17a2b44e5cad2d80a6d5942d30a345
         start_block: 38290244
       - name: Reality
-        address: 0xe78996a233895be74a66f451f1019ca9734205cc
+        address:
+          - 0xe78996a233895be74a66f451f1019ca9734205cc # RealityETH 3.0 (MarketFactory V1)
+          - 0xeb51d9d9717906c981c57af09c4a3449ef30705b # RealityETH 3.2 (MarketFactory V2)
         start_block: 36404701
       - name: ConditionalTokens
         address: 0xceafdd6bc0bef976fdcd1112955828e00543c0ce
@@ -151,7 +153,9 @@ chains:
         address: 0x83f20f44975d03b1b09e64809b757c47f942beea
         start_block: 20894990
       - name: Reality
-        address: 0x5b7dd1e86623548af054a4985f7fc8ccbb554e2c
+        address:
+          - 0x5b7dd1e86623548af054a4985f7fc8ccbb554e2c # RealityETH 3.0 (MarketFactory V1)
+          - 0x6a2155613b68efb38d5c6074921f3f4281c8c177 # RealityETH 3.2 (MarketFactory V2)
         start_block: 20894990
       - name: ConditionalTokens
         address: 0xc59b0e4de5f1248c1140964e0ff287b192407e0c

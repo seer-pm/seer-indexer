@@ -37,6 +37,38 @@ export type MarketProcessInput = {
   questions: QuestionRow[];
 };
 
+/**
+ * Market state that follows from its questions as Reality holds them when the market is created. A
+ * question can be asked (and answered, or sent to arbitration) before the market exists, and those
+ * Reality events reach no market, so this is the only place that state enters the market row.
+ * Mirrors what the Reality handlers maintain: `finalizeTs` is the latest question deadline, or the
+ * default while any question is unanswered.
+ */
+export function initialQuestionState(questions: QuestionRow[]): {
+  hasAnswers: boolean;
+  finalizeTs: bigint;
+  questionsInArbitration: bigint;
+} {
+  let finalizeTs = 0n;
+  let unanswered = questions.length === 0;
+  let hasAnswers = false;
+  let questionsInArbitration = 0n;
+  for (const q of questions) {
+    if (q.finalize_ts === 0n) {
+      unanswered = true;
+    } else {
+      hasAnswers = true;
+      if (q.finalize_ts > finalizeTs) finalizeTs = q.finalize_ts;
+    }
+    if (q.is_pending_arbitration) questionsInArbitration += 1n;
+  }
+  return {
+    hasAnswers,
+    finalizeTs: unanswered ? DEFAULT_FINALIZE_TS : finalizeTs,
+    questionsInArbitration,
+  };
+}
+
 function addrLower(a: string): string {
   return a.toLowerCase() as `0x${string}`;
 }
@@ -135,9 +167,7 @@ export async function processMarket(
     payoutReported: false,
     payoutNumerators: data.outcomes.map(() => 0n),
     openingTs: 0n,
-    finalizeTs: DEFAULT_FINALIZE_TS,
-    questionsInArbitration: 0n,
-    hasAnswers: false,
+    ...initialQuestionState(data.questions),
     index: await getNextMarketIndex(context, chainId),
     blockNumber: meta.blockNumber,
     blockTimestamp: meta.blockTimestamp,
@@ -171,7 +201,8 @@ export async function processMarket(
       best_answer: qRow.best_answer.toLowerCase() as `0x${string}`,
       bond: qRow.bond,
       min_bond: qRow.min_bond,
-      arbitration_occurred: false,
+      // A question shared with an earlier market keeps what its events already recorded.
+      arbitration_occurred: prevQ?.arbitration_occurred ?? false,
       marketQuestionIds: nextQmq,
     });
     context.MarketQuestion.set({
