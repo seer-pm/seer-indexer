@@ -275,3 +275,19 @@ indexer.onEvent(
     );
   }
 );
+
+// The hook emits nothing when a pool is created, so a pool is recorded at the PoolManager's `Initialize`:
+// a pool with liquidity and no limit order yet still resolves to its market. `hooks` is not indexed, so every
+// `Initialize` on the chain reaches this handler and `ensurePool` drops the pools of other hooks.
+indexer.onEvent(
+  { contract: "PoolManager", event: "Initialize" },
+  async ({ event, context }) => {
+    await ensurePool(
+      context,
+      Number(event.chainId),
+      poolKeyFromParams(event.params),
+      BigInt(event.block.number),
+      BigInt(event.block.timestamp)
+    );
+  }
+);
