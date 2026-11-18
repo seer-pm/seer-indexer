@@ -156,6 +156,9 @@ chains:
       - name: CurateIEvidence
         address: 0x4a9f8e73b3c4c9d7fa0210b9de457b1c493a3ada
         start_block: 20893866
+      - name: SerLpp
+        address: 0xd14ef697281404646d8e2437a0050794a6a22fd6
+        start_block: 20893083
       - name: ArbitratorIEvidence
         address:
           - 0x2018038203aee8e7a29dabd73771b0355d4f85ad
