@@ -183,6 +183,9 @@ chains:
       - name: LimitOrderHook
         address: 0x1f78E79C20d1E77526aC21E3651FABFc22035040
         start_block: 154980394
+      - name: SerLpp
+        address: 0x5ee89a5e2b4c9204f0f42c6df4ae1b226e862afd
+        start_block: 159749140
   - id: 8453
     start_block: 34781185
     contracts:
@@ -199,6 +202,9 @@ chains:
       - name: LimitOrderHook
         address: 0x19E8B37E9f4d69927Da1e13e989a2f955ee39040
         start_block: 49385093
+      - name: SerLpp
+        address: 0x813e4f03ead3a106409b67bec6f91c34e2a489b9
+        start_block: 59525224
   #- id: 11155111
   #  start_block: 6992825
   #  contracts:
